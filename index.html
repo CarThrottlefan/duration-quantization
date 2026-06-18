@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Snap Line — why some notes round more than others</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Make the Unhearable Visible · Sec. IV-C, Fig. 11</p>
+    <h1>The Snap Line: why some notes round more than others</h1>
+    <p class="lede">Note symbols can only represent certain durations. A played
+      note gets <b>rounded to the nearest one</b> — but those representable
+      durations are not evenly spaced, so the rounding error isn't either.
+      The paper states this in one sentence and shows two brackets in a
+      figure; this makes the rounding itself something you can drag through.</p>
+    <p class="lede2">Drag the handle below to "play" a duration. Toggle the
+      modifiers to see how dots, ties, and triplets fill in the gaps —
+      and watch the trade-off the paper names directly: more representable
+      values means less error, but a busier, harder-to-read line.</p>
+  </header>
+
+  <section class="card">
+    <h2>What the system is allowed to represent</h2>
+    <p class="sub">Simple note values (whole, half, quarter…) are always available.
+      Turn on modifiers to add more representable durations.</p>
+
+    <div class="mods" id="mods" role="group" aria-label="Duration modifiers">
+      <button class="mod" data-cat="dots" style="--c:var(--dots)" aria-pressed="true">
+        <span class="sw"></span><span class="lbl">Dots<small>+50% duration</small></span>
+      </button>
+      <button class="mod" data-cat="ddots" style="--c:var(--ddots)" aria-pressed="false">
+        <span class="sw"></span><span class="lbl">Double dots<small>+75% duration</small></span>
+      </button>
+      <button class="mod" data-cat="tuplets" style="--c:var(--tuplets)" aria-pressed="false">
+        <span class="sw"></span><span class="lbl">Triplets<small>÷3 subdivisions</small></span>
+      </button>
+      <button class="mod" data-cat="ties" style="--c:var(--ties)" aria-pressed="false">
+        <span class="sw"></span><span class="lbl">Ties<small>combine two notes</small></span>
+      </button>
+    </div>
+
+    <div class="readouts">
+      <div class="ro">Representable durations shown<b id="roCount">—</b></div>
+      <div class="ro">Worst-case rounding error<b id="roWorst">—</b></div>
+      <div class="ro">…at current tempo<b id="roWorstMs" class="flag">—</b></div>
+    </div>
+
+    <div class="tempo">
+      <span>Tempo</span>
+      <input type="range" id="bpm" min="40" max="200" value="90" step="1">
+      <span id="bpmLabel" style="font-family:var(--mono);color:var(--ink)">90 BPM</span>
+      <span style="color:var(--faint)">— same control the paper says you need before any of this means anything</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Drag a played duration onto the line</h2>
+    <p class="sub">The shaded bands are <b>catchment zones</b> — the range of
+      durations that round to that tick. Wider band = more leeway. Notice
+      quarter's band is built to be exactly twice the width of eighth's:
+      the paper's claim, made measurable.</p>
+
+    <div class="scroll">
+      <svg id="axisSvg" role="img" aria-label="Duration axis with draggable handle"></svg>
+    </div>
+    <input type="range" class="vh-range" id="handleInput" min="0" max="1" step="0.0005" value="0.42"
+      aria-label="Played duration, in beats, drag to change">
+
+    <div class="verdict" id="verdict"></div>
+
+    <div class="actions">
+      <button class="btn" id="randomize">Drop at a random spot</button>
+      <button class="btn" id="onTarget">Snap exactly on a note</button>
+      <button class="btn" id="simRhythm" style="border-color: var(--bad); color: var(--bad);">Simulate Sloppy Triplets</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>The rounding error, as a continuous function</h2>
+    <p class="sub">The paper never plots this — it only states that error
+      depends on tempo, target duration, and instrument. Here it is as a
+      shape: a sawtooth, not a flat line. Each tooth's height is exactly
+      half its zone's width above. Add modifiers and watch the teeth
+      shrink — that's the precision you're trading for a busier line.</p>
+    <div class="scroll">
+      <svg id="errSvg" role="img" aria-label="Rounding error as a function of played duration"></svg>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Practice History & Quantization Drift</h2>
+    <p class="sub">Small deviations accumulate over time. This heatmap tracks your recent inputs (X-axis = duration, Y-axis = attempt history). Notice how your raw inputs might scatter, but the system forces them into rigid columns—sometimes amplifying the mistake if they cross a catchment zone boundary.</p>
+    <div class="scroll">
+      <svg id="historySvg" role="img" aria-label="2D History Plot"></svg>
+    </div>
+    <div class="actions">
+      <button class="btn" id="clearHistory">Clear History</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <p class="takeaway"><b>Why this matters beyond this one figure:</b> Section
+      IV-A's note-duration design ends by asking whether the "too short / good /
+      too long" threshold should depend on tempo, target duration, or the
+      musician's skill. This line is the mechanism behind that question — the
+      zones above are exactly the regions a threshold-based assessor has to
+      draw, and they are provably uneven. Any fixed percentage threshold treats
+      a wide zone (quarter) and a narrow one (eighth) identically, even though
+      one allows far more real timing slack than the other.</p>
+  </section>
+
+  <footer>
+    Built for the CGV Seminar implementation component. Explains the
+    representable-duration quantization described in Sec. IV-C and Fig. 11
+    of Heyen, Gleicher &amp; Sedlmair, <i>Make the Unhearable Visible</i>
+    (IEEE TVCG) — a mechanism the paper states in prose but never shows as a
+    continuous, draggable line. All logic and rendering here is custom; no
+    charting or music-theory libraries are used.
+  </footer>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
