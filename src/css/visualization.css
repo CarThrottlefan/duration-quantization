@@ -1,0 +1,13 @@
+/* ---- Visualization (SVG axis / error curve / history) ------------- */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: #11141a; margin-top: 16px; }
+svg { display: block; touch-action: none; }
+.tick-label { font-family: var(--mono); font-size: 9.5px; }
+.handle { cursor: grab; }
+.handle:active { cursor: grabbing; }
+
+#errSvg { height: 130px; }
+#historySvg { height: 180px; }
+
+/* visually-hidden but keyboard accessible */
+.vh-range { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.vh-range:focus-visible { opacity: 1; pointer-events: auto; position: static; width: auto; height: auto; margin-top: 8px; }
