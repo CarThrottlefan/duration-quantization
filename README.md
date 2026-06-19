@@ -1,16 +1,10 @@
 # Harmonic X-Ray — The Snap Line
 
-An interactive explainer for the **representable-duration quantization**
-mechanism described in Sec. IV-C / Fig. 11 of:
+This project is an interactive tool that explains the representable-duration quantization mechanism described in Section IV-C (Figure 11) of the following paper:
 
-> Heyen, Gleicher & Sedlmair, *"Make the Unhearable Visible"*, IEEE TVCG.
+> Heyen, Gleicher & Sedlmair, "Make the Unhearable Visible", IEEE TVCG.
 
-The paper states in prose that a played note gets rounded to the nearest
-representable duration, and that the resulting "catchment zones" are
-unevenly sized. This project turns that single sentence into something
-draggable: a duration axis, a continuous rounding-error curve, and a
-practice-history view, all built with plain HTML/CSS/JS — no charting or
-music-theory libraries.
+The paper explains that when a note is played, it is rounded to the nearest representable duration, which creates unevenly sized "catchment zones". I turned this idea into a draggable visualization with a continuous-duration axis, a rounding-error curve, and a practice-history view. I built everything using only HTML, CSS, and JavaScript, without any external charting or music-theory libraries.
 
 ## Project structure
 
@@ -40,15 +34,6 @@ harmonic-xray/
             └── status.js       # verdict pill + numeric readouts
 ```
 
-**Why split it this way:** `duration-model.js` is pure data/math and has
-no DOM dependency, so the quantization logic itself (the actual point of
-the seminar deliverable) can be reasoned about — or unit tested — in
-isolation. `state.js` is the one place mutable app state lives. `events.js`
-only ever mutates state and calls into `render/`; it never touches the DOM
-directly except through `dom-utils.js`. Each file under `render/` owns one
-visual (axis, error curve, history, status) so a change to one chart can't
-accidentally break another.
-
 ## Running it
 
 No build step or bundler is required — this is plain ES modules served as
@@ -76,10 +61,3 @@ Then open **http://localhost:5173**.
 
 Open the `src/` folder in VS Code and use the **Live Server** extension's
 "Go Live" button on `index.html`.
-
-## Notes
-
-- All visualization code is hand-rolled SVG/DOM (`dom-utils.js`'s `el()`
-  helper) — there is intentionally no D3, Chart.js, or similar dependency.
-- State (toggled modifiers, played duration, tempo, attempt history) lives
-  entirely in `src/js/state.js` and is not persisted between page loads.
